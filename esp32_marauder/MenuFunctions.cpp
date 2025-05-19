@@ -17,7 +17,7 @@ MenuFunctions::MenuFunctions()
 // LVGL Stuff
 /* Interrupt driven periodic handler */
 
-#ifdef HAS_ILI9341
+#ifdef HAS_ST7789
   void MenuFunctions::lv_tick_handler()
   {
     lv_tick_inc(LVGL_TICK_PERIOD);
@@ -58,7 +58,7 @@ MenuFunctions::MenuFunctions()
   
     if(touchX>WIDTH_1 || touchY > HEIGHT_1)
     {
-      Serial.println("Y or y outside of expected parameters..");
+      Serial.println("x or y outside of expected parameters..");
       Serial.print("y:");
       Serial.print(touchX);
       Serial.print(" x:");
@@ -654,7 +654,7 @@ void MenuFunctions::buttonSelected(int b, int x) {
 }
 
 void MenuFunctions::displayMenuButtons() {
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     // Draw lines to show each menu button
     for (int i = 0; i < 3; i++) {
 
@@ -749,14 +749,14 @@ void MenuFunctions::main(uint32_t currentTime)
 
   int pre_getTouch = millis();
 
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     if (!this->disable_touch)
       pressed = display_obj.updateTouch(&t_x, &t_y);
   #endif
 
 
   // This is if there are scans/attacks going on
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     if ((wifi_scan_obj.currentScanMode != WIFI_SCAN_OFF) &&
         (pressed) &&
         (wifi_scan_obj.currentScanMode != OTA_UPDATE) &&
@@ -823,7 +823,7 @@ void MenuFunctions::main(uint32_t currentTime)
 
     bool c_btn_press = c_btn.justPressed();
 
-    #ifndef HAS_ILI9341
+    #ifndef HAS_ST7789
     
       if ((c_btn_press) &&
           (wifi_scan_obj.currentScanMode != WIFI_SCAN_OFF) &&
@@ -902,7 +902,7 @@ void MenuFunctions::main(uint32_t currentTime)
   // This is for when on a menu
   // Make sure to add certain scanning functions here or else
   // menu items will be selected while scans and attacks are running
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     if ((wifi_scan_obj.currentScanMode != WIFI_ATTACK_BEACON_SPAM) &&
         (wifi_scan_obj.currentScanMode != WIFI_ATTACK_AP_SPAM) &&
         (wifi_scan_obj.currentScanMode != WIFI_ATTACK_AUTH) &&
@@ -1358,7 +1358,7 @@ void MenuFunctions::updateStatusBar()
   display_obj.tft.fillRect(186, 0, 16, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
 
   
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     #ifdef HAS_BUTTONS
       if (this->disable_touch) {
         display_obj.tft.setCursor(0, 1);
@@ -1483,7 +1483,7 @@ void MenuFunctions::drawStatusBar()
   display_obj.tft.fillRect(186, 0, 16, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
 
 
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     #ifdef HAS_BUTTONS
       if (this->disable_touch) {
         display_obj.tft.setCursor(0, 1);
@@ -1531,7 +1531,7 @@ void MenuFunctions::orientDisplay()
 
   display_obj.tft.setCursor(0, 0);
 
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     #ifndef HAS_CYD_TOUCH
       #ifdef TFT_SHIELD
         uint16_t calData[5] = { 275, 3494, 361, 3528, 4 }; // tft.setRotation(0); // Portrait with TFT Shield
@@ -1601,7 +1601,7 @@ void MenuFunctions::RunSetup()
 
   this->disable_touch = false;
   
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     this->initLVGL();
   #endif
    
@@ -1642,22 +1642,22 @@ void MenuFunctions::RunSetup()
   #ifdef HAS_BT
     airtagMenu.list = new LinkedList<MenuNode>();
   #endif
-  //#ifndef HAS_ILI9341
+  //#ifndef HAS_ST7789
     wifiStationMenu.list = new LinkedList<MenuNode>();
   //#endif
 
   // WiFi HTML menu stuff
   htmlMenu.list = new LinkedList<MenuNode>();
-  #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+  #if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
     miniKbMenu.list = new LinkedList<MenuNode>();
   #endif
-  //#ifndef HAS_ILI9341
-  //  #ifdef HAS_BUTTONS
+  #ifndef HAS_ST7789
+    #ifdef HAS_BUTTONS
       #ifdef HAS_SD
         sdDeleteMenu.list = new LinkedList<MenuNode>();
       #endif
-  //  #endif
-  //#endif
+    #endif
+  #endif
 
   // Bluetooth menu stuff
   bluetoothSnifferMenu.list = new LinkedList<MenuNode>();
@@ -1711,7 +1711,7 @@ void MenuFunctions::RunSetup()
   #ifdef HAS_BT
     airtagMenu.name = "Select Airtag";
   #endif
-  //#ifndef HAS_ILI9341
+  //#ifndef HAS_ST7789
     wifiStationMenu.name = "Select Stations";
   //#endif
   #ifdef HAS_GPS
@@ -1719,13 +1719,13 @@ void MenuFunctions::RunSetup()
     wardrivingMenu.name = "Wardriving";
   #endif  
   htmlMenu.name = "EP HTML List";
-  #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+  #if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
     miniKbMenu.name = "Mini Keyboard";
   #endif
   #ifdef HAS_SD
-  //  #ifndef HAS_ILI9341
+    #ifndef HAS_ST7789
       sdDeleteMenu.name = "Delete SD Files";
-  //  #endif
+    #endif
   #endif
 
   // Build Main Menu
@@ -1789,7 +1789,7 @@ void MenuFunctions::RunSetup()
     wifi_scan_obj.StartScan(WIFI_SCAN_PACKET_RATE, TFT_ORANGE);
     wifi_scan_obj.renderPacketRate();
   });
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     this->addNodes(&wifiSnifferMenu, text_table1[46], TFTVIOLET, NULL, EAPOL, [this]() {
       wifi_scan_obj.StartScan(WIFI_SCAN_EAPOL, TFT_VIOLET);
     });
@@ -1832,7 +1832,7 @@ void MenuFunctions::RunSetup()
     this->drawStatusBar();
     wifi_scan_obj.StartScan(WIFI_SCAN_PWN, TFT_RED);
   });
-  //#ifndef HAS_ILI9341
+  //#ifndef HAS_ST7789
     this->addNodes(&wifiSnifferMenu, text_table1[49], TFTMAGENTA, NULL, BEACON_SNIFF, [this]() {
       display_obj.clearScreen();
       this->drawStatusBar();
@@ -1844,14 +1844,14 @@ void MenuFunctions::RunSetup()
     this->drawStatusBar();
     wifi_scan_obj.StartScan(WIFI_SCAN_AP_STA, 0x97e0);
   });
-  //#ifndef HAS_ILI9341
+  //#ifndef HAS_ST7789
     this->addNodes(&wifiSnifferMenu, text_table1[59], TFTORANGE, NULL, PACKET_MONITOR, [this]() {
       display_obj.clearScreen();
       this->drawStatusBar();
       wifi_scan_obj.StartScan(WIFI_SCAN_STATION, TFT_WHITE);
     });
   //#endif
-  //#ifdef HAS_ILI9341
+  //#ifdef HAS_ST7789
   this->addNodes(&wifiSnifferMenu, "Signal Monitor", TFTCYAN, NULL, PACKET_MONITOR, [this]() {
     display_obj.clearScreen();
     this->drawStatusBar();
@@ -1939,14 +1939,14 @@ void MenuFunctions::RunSetup()
     this->changeMenu(&generateSSIDsMenu);
     wifi_scan_obj.RunGenerateSSIDs();
   });
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     this->addNodes(&wifiGeneralMenu, text_table1[1], TFTNAVY, NULL, KEYBOARD_ICO, [this](){
       display_obj.clearScreen(); 
       wifi_scan_obj.StartScan(LV_ADD_SSID, TFT_YELLOW); 
       addSSIDGFX();
     });
   #endif
-  #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+  #if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
     this->addNodes(&wifiGeneralMenu, text_table1[1], TFTNAVY, NULL, KEYBOARD_ICO, [this](){
       this->changeMenu(&miniKbMenu);
       this->miniKeyboard(&miniKbMenu);
@@ -1964,7 +1964,7 @@ void MenuFunctions::RunSetup()
     this->changeMenu(&clearAPsMenu);
     wifi_scan_obj.RunClearStations();
   });
-  /*#ifdef HAS_ILI9341
+  /*#ifdef HAS_ST7789
     // Select APs on OG
     this->addNodes(&wifiGeneralMenu, text_table1[56], TFTNAVY, NULL, KEYBOARD_ICO, [this](){
       display_obj.clearScreen(); 
@@ -2013,7 +2013,7 @@ void MenuFunctions::RunSetup()
       this->changeMenu(&htmlMenu);
     });
 
-    #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+    #if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
       miniKbMenu.parentMenu = &wifiGeneralMenu;
       this->addNodes(&miniKbMenu, "a", TFTCYAN, NULL, 0, [this]() {
         this->changeMenu(miniKbMenu.parentMenu);
@@ -2143,7 +2143,7 @@ void MenuFunctions::RunSetup()
     });
   //#endif
 
-  //#ifdef HAS_ILI9341
+  //#ifdef HAS_ST7789
   //  this->addNodes(&wifiGeneralMenu, "View AP Info", TFTLIGHTGREY, NULL, 0, [this]() {
   //    display_obj.clearScreen();
   //    wifi_scan_obj.currentScanMode = LV_ADD_SSID;
@@ -2176,7 +2176,7 @@ void MenuFunctions::RunSetup()
   });
 
   // Clone AP MAC to ESP32 for button folks
-  //#ifndef HAS_ILI9341
+  //#ifndef HAS_ST7789
     this->addNodes(&setMacMenu, "Clone AP MAC", TFTRED, NULL, CLEAR_ICO, [this](){
       // Add the back button
       wifiAPMenu.list->clear();
@@ -2330,7 +2330,7 @@ void MenuFunctions::RunSetup()
     wifi_scan_obj.StartScan(BT_ATTACK_SPAM_ALL, TFT_MAGENTA);
   });
 
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     this->addNodes(&bluetoothAttackMenu, "Spoof Airtag", TFTWHITE, NULL, ATTACKS, [this](){
       display_obj.clearScreen();
       wifi_scan_obj.currentScanMode = LV_ADD_SSID;
@@ -2339,7 +2339,7 @@ void MenuFunctions::RunSetup()
     });
   #endif
 
-  #ifndef HAS_ILI9341
+  #ifndef HAS_ST7789
     #ifdef HAS_BT
     // Select Airtag on Mini
       this->addNodes(&bluetoothAttackMenu, "Spoof Airtag", TFTWHITE, NULL, ATTACKS, [this](){
@@ -2423,7 +2423,7 @@ void MenuFunctions::RunSetup()
   #ifdef HAS_SD
     if (sd_obj.supported) {
       this->addNodes(&deviceMenu, "Delete SD Files", TFTCYAN, NULL, SD_UPDATE, [this]() {
-        #ifndef HAS_ILI9341
+        #ifndef HAS_ST7789
           #ifdef HAS_BUTTONS
             this->changeMenu(&sdDeleteMenu);
             #if !(defined(MARAUDER_V6) || defined(MARAUDER_V6_1) || defined(MARAUDER_CYD_MICRO))
@@ -2495,98 +2495,20 @@ void MenuFunctions::RunSetup()
               }
             #endif
           #endif
-        #else
-          #ifdef HAS_BUTTONS
-            this->changeMenu(&sdDeleteMenu);
-            bool deleting = true;
-
-            display_obj.tft.setTextWrap(false);
-            display_obj.tft.setCursor(0, SCREEN_HEIGHT / 3);
-            display_obj.tft.setTextColor(TFT_CYAN, TFT_BLACK);
-            display_obj.tft.println("Loading...");
-
-            uint16_t t_x = 0, t_y = 0; // To store the touch coordinates
-
-            while (deleting) {
-              // Build list of files
-              sd_obj.sd_files->clear();
-              delete sd_obj.sd_files;
-
-              sd_obj.sd_files = new LinkedList<String>();
-
-              sd_obj.sd_files->add("Back");
-
-              sd_obj.listDirToLinkedList(sd_obj.sd_files);
-
-              int sd_file_index = 0;
-
-              this->sdDeleteMenu.list->set(0, MenuNode{sd_obj.sd_files->get(sd_file_index), false, TFTCYAN, 0, NULL, true, NULL});
-              this->buildButtons(&sdDeleteMenu);
-              this->displayCurrentMenu();
-
-              // Start button loop
-              while(true) {
-                #ifdef HAS_ILI9341
-                  if (!this->disable_touch)
-                    pressed = display_obj.updateTouch(&t_x, &t_y);
-                #endif
-
-                uint8_t menu_button = display_obj.menuButton(&t_x, &t_y, pressed);
-
-                #if !defined(MARAUDER_M5STICKC) || defined(MARAUDER_M5STICKCP2)
-                  if (menu_button == UP_BUTTON) {
-                    if (sd_file_index > 0)
-                      sd_file_index--;
-                    else
-                      sd_file_index = sd_obj.sd_files->size() - 1;
-
-                    this->sdDeleteMenu.list->set(0, MenuNode{sd_obj.sd_files->get(sd_file_index), false, TFTCYAN, 0, NULL, true, NULL});
-                    this->buildButtons(&sdDeleteMenu);
-                    this->displayCurrentMenu();
-                  }
-                #endif
-                if (menu_button == DOWN_BUTTON) {
-                  if (sd_file_index < sd_obj.sd_files->size() - 1)
-                    sd_file_index++;
-                  else
-                    sd_file_index = 0;
-
-                  this->sdDeleteMenu.list->set(0, MenuNode{sd_obj.sd_files->get(sd_file_index), false, TFTCYAN, 0, NULL, true, NULL});
-                  this->buildButtons(&sdDeleteMenu, 0, sd_obj.sd_files->get(sd_file_index));
-                  this->displayCurrentMenu();
-                }
-                if (menu_button == SELECT_BUTTON) {
-                  if (sd_obj.sd_files->get(sd_file_index) != "Back") {
-                    if (sd_obj.removeFile("/" + sd_obj.sd_files->get(sd_file_index)))
-                      Serial.println("Successfully Removed File: /" + sd_obj.sd_files->get(sd_file_index));
-                      display_obj.tft.setTextWrap(false);
-                      display_obj.tft.setCursor(0, SCREEN_HEIGHT / 3);
-                      display_obj.tft.setTextColor(TFT_CYAN, TFT_BLACK);
-                      display_obj.tft.println("Deleting /" + sd_obj.sd_files->get(sd_file_index) + "...");
-                  }
-                  else {
-                    this->changeMenu(sdDeleteMenu.parentMenu);
-                    deleting = false;
-                  }
-                  break;
-                }
-              }
-            }
-          #endif
         #endif
       });
     }
   #endif
 
   #ifdef HAS_SD
-    //#ifndef HAS_ILI9341
+    #ifndef HAS_ST7789
       #ifdef HAS_BUTTONS
         sdDeleteMenu.parentMenu = &deviceMenu;
         this->addNodes(&sdDeleteMenu, text09, TFTLIGHTGREY, NULL, 0, [this]() {
           this->changeMenu(sdDeleteMenu.parentMenu);
         });
       #endif
-    //#endif
+    #endif
   #endif
 
   // Save Files Menu
@@ -2747,7 +2669,7 @@ void MenuFunctions::RunSetup()
   this->initTime = millis();
 }
 
-#if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+#if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
   void MenuFunctions::miniKeyboard(Menu * targetMenu) {
     // Prepare a char array and reset temp SSID string
     extern LinkedList<ssid>* ssids;
@@ -3169,7 +3091,7 @@ void MenuFunctions::displayCurrentMenu(int start_index)
     #endif
 
     // Draw the up, down, select buttons
-    /*#ifdef HAS_ILI9341
+    /*#ifdef HAS_ST7789
       for (int i = BUTTON_ARRAY_LEN; i < BUTTON_ARRAY_LEN + 3; i++) {
         display_obj.key[i].drawButton(true);
       }
@@ -3181,7 +3103,7 @@ void MenuFunctions::displayCurrentMenu(int start_index)
         continue;
       uint16_t color = this->getColor(current_menu->list->get(i).color);
       #ifdef HAS_FULL_SCREEN
-        //#ifndef HAS_ILI9341
+        //#ifndef HAS_ST7789
           if ((current_menu->list->get(i).selected) || (current_menu->selected == i)) {
             display_obj.key[i - start_index].drawButton(true, current_menu->list->get(i).name);
           }
