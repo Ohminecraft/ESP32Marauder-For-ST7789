@@ -10,7 +10,7 @@
   //#define MARAUDER_M5STICKC
   //#define MARAUDER_M5STICKCP2
   //#define MARAUDER_MINI
-  //#define MARAUDER_V4
+  #define MARAUDER_V4 // For Old Hardware Like (ST7789)
   //#define MARAUDER_V6
   //#define MARAUDER_V6_1
   //#define MARAUDER_V7
@@ -26,7 +26,7 @@
   //#define MARAUDER_CYD_GUITION // ESP32-2432S024 GUITION
   //// END BOARD TARGETS
 
-  #define MARAUDER_VERSION "v1.5.1"
+  #define MARAUDER_VERSION "v1.5.0"
 
   #define GRAPH_REFRESH   100
 
@@ -150,7 +150,7 @@
 
   #ifdef MARAUDER_V4
     //#define FLIPPER_ZERO_HAT
-    #define HAS_BATTERY
+    //#define HAS_BATTERY
     #define HAS_BT
     //#define HAS_BUTTONS
     #define HAS_NEOPIXEL_LED
@@ -161,6 +161,7 @@
     #define USE_SD
     #define HAS_TEMP_SENSOR
     #define HAS_GPS
+    //#define HAS_CYD_TOUCH
   #endif
 
   #if defined(MARAUDER_V6) || defined(MARAUDER_V6_1)
@@ -656,7 +657,7 @@
 
     #ifdef MARAUDER_V4
       #define SCREEN_CHAR_WIDTH 40
-      #define HAS_ILI9341
+      #define HAS_ST7789
       #define BANNER_TEXT_SIZE 2
 
       #ifndef TFT_WIDTH
@@ -718,7 +719,7 @@
 
     #if defined(MARAUDER_V6) || defined(MARAUDER_V6_1)
       #define SCREEN_CHAR_WIDTH 40
-      #define HAS_ILI9341
+      #define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -787,7 +788,7 @@
 
     #if defined(MARAUDER_CYD_MICRO)
       #define SCREEN_CHAR_WIDTH 40
-      #define HAS_ILI9341
+      #define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -852,7 +853,7 @@
 
     #if defined(MARAUDER_CYD_GUITION)
       #define SCREEN_CHAR_WIDTH 40
-      #define HAS_ILI9341
+      #define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -919,7 +920,7 @@
 
     #ifdef MARAUDER_V7
       #define SCREEN_CHAR_WIDTH 40
-      //#define HAS_ILI9341
+      //#define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -986,7 +987,7 @@
 
     #ifdef MARAUDER_V7_1
       #define SCREEN_CHAR_WIDTH 40
-      //#define HAS_ILI9341
+      //#define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -1053,7 +1054,7 @@
 
     #ifdef MARAUDER_KIT
       #define SCREEN_CHAR_WIDTH 40
-      #define HAS_ILI9341
+      #define HAS_ST7789
     
       #define BANNER_TEXT_SIZE 2
 
@@ -1765,7 +1766,7 @@
   #ifdef HAS_PSRAM
     #define BUF_SIZE 8 * 1024 // Had to reduce buffer size to save RAM. GG @spacehuhn
     #define SNAP_LEN 1 * 4096 // max len of each recieved packet
-  #elif !defined(HAS_ILI9341)
+  #elif !defined(HAS_ST7789)
     #define BUF_SIZE 8 * 1024 // Had to reduce buffer size to save RAM. GG @spacehuhn
     #define SNAP_LEN 4096 // max len of each recieved packet
   #else
