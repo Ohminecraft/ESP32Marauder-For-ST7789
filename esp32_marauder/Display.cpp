@@ -6,13 +6,13 @@
 Display::Display()
 #ifdef HAS_CYD_TOUCH
   : touchscreenSPI(VSPI),
-    touchscreen(XPT2046_CS, XPT2046_IRQ)
+    touchscreen(TOUCH_CS, TOUCH_IRQ)
 #endif
 {
 }
 
 int8_t Display::menuButton(uint16_t *x, uint16_t *y, bool pressed) {
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
     for (uint8_t b = BUTTON_ARRAY_LEN; b < BUTTON_ARRAY_LEN + 3; b++) {
       if (pressed && this->key[b].contains(*x, *y)) {
         this->key[b].press(true);  // tell the button it is pressed
@@ -33,46 +33,28 @@ int8_t Display::menuButton(uint16_t *x, uint16_t *y, bool pressed) {
 }
 
 uint8_t Display::updateTouch(uint16_t *x, uint16_t *y, uint16_t threshold) {
-  #ifdef HAS_ILI9341
-    if (!this->headless_mode)
-      #ifndef HAS_CYD_TOUCH
-        return this->tft.getTouch(x, y, threshold);
-      #else
-        if (this->touchscreen.tirqTouched() && this->touchscreen.touched()) {
-          TS_Point p = this->touchscreen.getPoint();
-
-          //*x = map(p.x, 200, 3700, 1, TFT_WIDTH);
-          //*y = map(p.y, 240, 3800, 1, TFT_HEIGHT);
-
-          uint8_t rot = this->tft.getRotation();
-
-          switch (rot) {
-            case 0: // Standard Protrait
-              *x = map(p.x, 200, 3700, 1, TFT_WIDTH);
-              *y = map(p.y, 240, 3800, 1, TFT_HEIGHT);
-              break;
-            case 1:
-              *x = map(p.y, 143, 3715, 0, TFT_HEIGHT);     // Horizontal (Y axis in touch, X on screen)
-              *y = map(p.x, 3786, 216, 0, TFT_WIDTH);    // Vertical (X axis in touch, Y on screen)
-              break;
-            case 2:
-              *x = map(p.x, 3700, 200, 1, TFT_WIDTH);
-              *y = map(p.y, 3800, 240, 1, TFT_HEIGHT);
-              break;
-            case 3:
-              *x = map(p.y, 3800, 240, 1, TFT_WIDTH);
-              *y = map(p.x, 200, 3700, 1, TFT_HEIGHT);
-              break;
-          }
-          return 1;
-        }
-        else
-          return 0;
-      #endif
-    else
-      return !this->headless_mode;
+  #ifdef HAS_ST7789
+    if (!this->headless_mode) {
+      //uint16_t bx_raw, by_raw;
+      uint16_t tx = 0, ty = 0;
+      if(!this->tft.getTouch(&tx, &ty, threshold)) return 0;
+      uint8_t rot = this->tft.getRotation();
+      switch (rot) {
+        case 0:
+          *x = (uint16_t) map(tx, 240, 0, 1, TFT_WIDTH);
+          *y = (uint16_t) map(ty, 320, 0, 1, TFT_HEIGHT);
+          break;
+        case 1:
+          *x = (uint16_t) map((95 + TFT_WIDTH - tx), 0, TFT_WIDTH, 0, TFT_WIDTH);
+          *y = (uint16_t) map(ty, 0, 216, TFT_HEIGHT, 20);
+          break;
+        case 3:
+          return this->tft.getTouch(x, y, threshold);
+          break;
+      }
+      return 1;
+    } else return !this->headless_mode;
   #endif
-
   return 0;
 }
 
@@ -89,7 +71,7 @@ void Display::RunSetup()
   #endif
 
   #ifdef HAS_CYD_TOUCH
-    this->touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
+    this->touchscreenSPI.begin(TFT_SCLK, TFT_MISO, TFT_MOSI, TFT_CS);
     this->touchscreen.begin(touchscreenSPI);
     this->touchscreen.setRotation(0);
   #endif
@@ -109,7 +91,7 @@ void Display::RunSetup()
 
   tft.setCursor(0, 0);
 
-  #ifdef HAS_ILI9341
+  #ifdef HAS_ST7789
 
     #ifndef HAS_CYD_TOUCH
       #ifdef TFT_SHIELD
@@ -552,8 +534,8 @@ void Display::setupScrollArea(uint16_t tfa, uint16_t bfa) {
   //Serial.println("   tfa: " + (String)tfa);
   //Serial.println("   bfa: " + (String)bfa);
   //Serial.println("yStart: " + (String)this->yStart);
-  #ifdef HAS_ILI9341
-    tft.writecommand(ILI9341_VSCRDEF); // Vertical scroll definition
+  #ifdef HAS_ST7789
+    tft.writecommand(ST7789_VSCRDEF); // Vertical scroll definition
     tft.writedata(tfa >> 8);           // Top Fixed Area line count
     tft.writedata(tfa);
     tft.writedata((YMAX-tfa-bfa)>>8);  // Vertical Scrolling Area line count
@@ -565,8 +547,8 @@ void Display::setupScrollArea(uint16_t tfa, uint16_t bfa) {
 
 
 void Display::scrollAddress(uint16_t vsp) {
-  #ifdef HAS_ILI9341
-    tft.writecommand(ILI9341_VSCRSADD); // Vertical scrolling pointer
+  #ifdef HAS_ST7789
+    tft.writecommand(ST7789_VSCRSADD); // Vertical scrolling pointer
     tft.writedata(vsp>>8);
     tft.writedata(vsp);
   #endif
