@@ -16,7 +16,7 @@
 // ##################################################################################
 
 // Only define one driver, the other ones must be commented out
-#define ILI9341_DRIVER
+//#define ILI9341_DRIVER
 //#define ST7735_DRIVER      // Define additional parameters below for this display
 //#define ILI9163_DRIVER     // Define additional parameters below for this display
 //#define S6D02A1_DRIVER
@@ -25,7 +25,7 @@
 //#define ILI9481_DRIVER
 //#define ILI9486_DRIVER
 //#define ILI9488_DRIVER     // WARNING: Do not connect ILI9488 display SDO to MISO if other devices share the SPI bus (TFT SDO does NOT tristate when CS is high)
-//#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
+#define ST7789_DRIVER      // Full configuration option, define additional parameters below for this display
 //#define ST7789_2_DRIVER    // Minimal configuration option, define additional parameters below for this display
 //#define R61581_DRIVER
 //#define RM68140_DRIVER
@@ -169,6 +169,7 @@
 #define TFT_BL   32  // LED back-light (only for ST7789 with backlight control pin)
 
 #define TOUCH_CS 21     // Chip select pin (T_CS) of touch screen
+//#define TOUCH_IRQ 35 // For CYD Setting not for CYD Board
 
 //#define TFT_WR 22    // Write strobe for modified Raspberry Pi TFT only
 
