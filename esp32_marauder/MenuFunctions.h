@@ -170,7 +170,7 @@ class MenuFunctions
     #ifdef HAS_BT
       Menu airtagMenu;
     #endif
-    //#ifndef HAS_ILI9341
+    //#ifndef HAS_ST7789
       Menu wifiStationMenu;
     //#endif
 
@@ -211,7 +211,7 @@ class MenuFunctions
     void displaySetting(String key, Menu* menu, int index);
     void buttonSelected(int b, int x = -1);
     void buttonNotSelected(int b, int x = -1);
-    #if (!defined(HAS_ILI9341) && defined(HAS_BUTTONS))
+    #if (!defined(HAS_ST7789) && defined(HAS_BUTTONS))
       void miniKeyboard(Menu * targetMenu);
     #endif
 
